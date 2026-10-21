@@ -1,2 +1,163 @@
-# Jarvis-assistant-
-Personal assistant 
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050b16">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="JARVIS">
+<title>J.A.R.V.I.S. — Personal AI</title>
+<style>
+:root{color-scheme:dark;--bg:#050b16;--panel:#09182a;--blue:#40caff;--blue2:#1286df;--muted:#80a8c7;--line:#174365}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 28%,#0b2843 0,#050b16 48%,#02050b 100%);color:#e5f8ff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 18px calc(22px + env(safe-area-inset-bottom));}
+main{max-width:620px;margin:0 auto;min-height:calc(100dvh - 40px);display:flex;flex-direction:column}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px 2px 8px}
+.eyebrow{font-size:10px;letter-spacing:.2em;color:#65cfff;font-weight:700}
+h1{font-size:28px;letter-spacing:.13em;margin:6px 0 0;font-weight:650}
+.status{font-size:10px;color:#8bdcff;border:1px solid #1d5d83;border-radius:99px;padding:7px 10px;white-space:nowrap}
+.core-wrap{display:grid;place-items:center;flex:1;min-height:290px;padding:16px 0}
+.core{width:min(72vw,280px);aspect-ratio:1;position:relative;display:grid;place-items:center;filter:drop-shadow(0 0 24px #008ee533)}
+.ring{position:absolute;border-radius:50%;border:1px solid #2bbcff66}
+.r1{inset:1%;border-style:dashed;animation:spin 32s linear infinite}
+.r2{inset:8%;border-width:2px;border-color:#38caff77;border-left-color:transparent;border-right-color:transparent;animation:spin 13s linear infinite reverse}
+.r3{inset:18%;border-style:dotted;animation:spin 24s linear infinite}
+.r4{inset:27%;border:1px solid #4bd6ff;box-shadow:0 0 22px #08aaff33,inset 0 0 20px #08aaff22}
+.core-face{width:43%;aspect-ratio:1;clip-path:polygon(22% 0,78% 0,100% 22%,100% 78%,78% 100%,22% 100%,0 78%,0 22%);border:1px solid #65e2ff;background:linear-gradient(145deg,#123c5d,#061425);display:grid;place-items:center;position:relative}
+.face-inner{width:100%;height:100%;display:grid;place-items:center}
+.face-svg{width:82%;filter:drop-shadow(0 0 6px #37caff)}
+.tick{position:absolute;width:5px;height:5px;border-radius:50%;background:#b8f2ff;box-shadow:0 0 10px #4bcaff}
+.t1{top:15%;left:50%}.t2{bottom:15%;left:50%}.t3{left:15%;top:50%}.t4{right:15%;top:50%}
+.core-wrap.listening .r1,.core-wrap.listening .r2,.core-wrap.listening .r3{animation-duration:3s}
+.core-wrap.listening .r4{box-shadow:0 0 36px #10bfff88,inset 0 0 30px #10bfff55}
+@keyframes spin{to{transform:rotate(360deg)}}
+.center-label{text-align:center;margin-top:-10px}
+#systemLine{font-size:12px;letter-spacing:.16em;color:#8ce5ff;font-weight:700}
+#hint{font-size:11px;color:var(--muted);margin-top:8px}
+.panel{background:linear-gradient(145deg,#0a1b2eeb,#06101deF);border:1px solid #174365;border-radius:18px;padding:15px;box-shadow:0 14px 40px #0003}
+.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.panel-head span:first-child{font-size:10px;letter-spacing:.16em;color:#83cdec;font-weight:700}
+#clear{border:0;background:none;color:#8aabc3;font-size:11px;padding:4px}
+#log{height:130px;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:2px 0 8px;scroll-behavior:smooth}
+.msg{font-size:13px;line-height:1.45;max-width:92%;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg .who{display:block;font-size:9px;letter-spacing:.14em;color:#69cfff;margin-bottom:3px;font-weight:700}
+.msg.user{align-self:flex-end;text-align:right;color:#d6f5ff}
+.msg.jarvis{align-self:flex-start;color:#e6f7ff}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:13px}
+button{font:inherit;cursor:pointer}
+.primary,.secondary{border-radius:13px;min-height:49px;font-weight:650;font-size:13px}
+.primary{border:1px solid #54d7ff;background:linear-gradient(135deg,#0b82c7,#07508c);color:white;box-shadow:0 0 20px #009ee522}
+.secondary{border:1px solid #23506e;background:#0b1a2b;color:#bcecff}
+.primary:active,.secondary:active{transform:scale(.985)}
+.input-row{display:flex;gap:8px;margin-top:10px}
+input{min-width:0;flex:1;background:#040b14;border:1px solid #1b4666;border-radius:12px;padding:13px;color:#e5f8ff;font-size:14px;outline:none}
+input:focus{border-color:#49cfff}
+#send{border:1px solid #25688f;border-radius:12px;background:#102b42;color:#9ce6ff;padding:0 16px;font-weight:700}
+.foot{font-size:10px;line-height:1.5;text-align:center;color:#6487a4;margin:13px 8px 0}
+.toast{font-size:11px;color:#ffcf7b;min-height:16px;margin-top:7px}
+@media(min-width:520px){.core-wrap{min-height:330px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div><div class="eyebrow">PERSONAL INTELLIGENCE SYSTEM</div><h1>J.A.R.V.I.S.</h1></div>
+  <div class="status" id="status">● STANDBY</div>
+</header>
+<section class="core-wrap" id="coreWrap" aria-label="Animated JARVIS interface">
+  <div class="core">
+    <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div><div class="ring r4"></div>
+    <span class="tick t1"></span><span class="tick t2"></span><span class="tick t3"></span><span class="tick t4"></span>
+    <div class="core-face"><div class="face-inner">
+      <svg class="face-svg" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+        <path d="M12 34 L34 24 L43 35 L35 44 L19 43Z M88 34 L66 24 L57 35 L65 44 L81 43Z" fill="#65ddff"/>
+        <path d="M20 50 L40 48 L36 57 L22 58Z M80 50 L60 48 L64 57 L78 58Z" fill="#d3f8ff"/>
+        <path d="M35 72 Q50 83 65 72" stroke="#5bdcff" stroke-width="4" stroke-linecap="round"/>
+        <path d="M50 36 L46 62 L54 62" stroke="#44cfff" stroke-width="2"/>
+        <path d="M16 15 L28 15 M16 15 L16 27 M84 15 L72 15 M84 15 L84 27 M16 85 L28 85 M16 85 L16 73 M84 85 L72 85 M84 85 L84 73" stroke="#55d9ff" stroke-width="2"/>
+      </svg>
+    </div></div>
+  </div>
+</section>
+<div class="center-label"><div id="systemLine">SYSTEM STANDBY</div><div id="hint">Tap “Talk to JARVIS” to begin</div></div>
+<section class="panel" style="margin-top:22px">
+  <div class="panel-head"><span>COMMUNICATION LOG</span><button id="clear" type="button">CLEAR LOG</button></div>
+  <div id="log" aria-live="polite">
+    <div class="msg jarvis"><span class="who">J.A.R.V.I.S.</span>At your service. I can speak, tell the time and date, and handle a few built-in commands. Online AI answers can be connected in a later version.</div>
+  </div>
+  <div class="controls">
+    <button class="primary" id="talk" type="button">🎙 Talk to JARVIS</button>
+    <button class="secondary" id="stop" type="button">■ Stop speaking</button>
+  </div>
+  <div class="input-row"><input id="typed" type="text" placeholder="Or type a command…" autocomplete="off"><button id="send" type="button">SEND</button></div>
+  <div class="toast" id="toast" role="status"></div>
+</section>
+<div class="foot">JARVIS MARK I · Runs in your browser. Microphone access requires permission and a supported browser. This prototype does not send your conversations to an AI service.</div>
+</main>
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const log = $('log'), talk = $('talk'), status = $('status'), systemLine = $('systemLine');
+  const hint = $('hint'), coreWrap = $('coreWrap'), toast = $('toast'), typed = $('typed');
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recognition = null, listening = false;
+  function addMessage(who, text){
+    const el = document.createElement('div'); el.className = 'msg ' + (who === 'YOU' ? 'user' : 'jarvis');
+    const label = document.createElement('span'); label.className = 'who'; label.textContent = who === 'YOU' ? 'YOU' : 'J.A.R.V.I.S.';
+    el.appendChild(label); el.appendChild(document.createTextNode(text)); log.appendChild(el); log.scrollTop = log.scrollHeight;
+  }
+  function setMode(mode, message){
+    status.textContent = mode === 'listening' ? '● LISTENING' : mode === 'speaking' ? '● RESPONDING' : '● STANDBY';
+    systemLine.textContent = mode === 'listening' ? 'LISTENING FOR INPUT' : mode === 'speaking' ? 'VOICE RESPONSE ACTIVE' : 'SYSTEM STANDBY';
+    hint.textContent = message || (mode === 'listening' ? 'Speak clearly, then pause' : 'Tap “Talk to JARVIS” to begin');
+    coreWrap.classList.toggle('listening', mode === 'listening');
+  }
+  function speak(text){
+    if(!('speechSynthesis' in window)){ toast.textContent = 'Spoken replies are not supported here; please read the response.'; setMode('idle'); return; }
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text); utter.lang = 'en-IN'; utter.rate = 0.96; utter.pitch = 0.88;
+    utter.onstart = () => setMode('speaking', 'JARVIS is responding');
+    utter.onend = () => setMode('idle');
+    utter.onerror = () => setMode('idle');
+    window.speechSynthesis.speak(utter);
+  }
+  function answer(raw){
+    const q = raw.trim(); if(!q) return;
+    addMessage('YOU', q); typed.value = '';
+    const s = q.toLowerCase(); let response;
+    if(/\b(hello|hi|hey|good morning|good evening)\b/.test(s)) response = 'Hello. JARVIS is online and ready to assist.';
+    else if(s.includes('time')) response = 'The time on your iPhone is ' + new Intl.DateTimeFormat('en-IN',{hour:'numeric',minute:'2-digit',hour12:true}).format(new Date()) + '.';
+    else if(s.includes('date') || s.includes('day is it')) response = 'Today is ' + new Intl.DateTimeFormat('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).format(new Date()) + '.';
+    else if(s.includes('who are you') || s.includes('your name')) response = 'I am JARVIS Mark One, your personal browser-based assistant prototype.';
+    else if(s.includes('how are you')) response = 'All systems nominal. Thank you for asking.';
+    else if(s.includes('help') || s.includes('what can you do')) response = 'You can ask me the time, date, my name, or say hello. This first version uses built-in commands, not a full online AI model yet.';
+    else if(s.includes('stop')) { window.speechSynthesis && window.speechSynthesis.cancel(); response = 'Voice output stopped.'; }
+    else response = 'I heard you say: "' + q + '". My voice interface is working, but intelligent open-ended answers are not connected yet. That needs a secure AI service connection in the next build.';
+    addMessage('JARVIS', response); speak(response);
+  }
+  function startListening(){
+    toast.textContent = '';
+    if(!SpeechRecognition){
+      toast.textContent = 'Speech recognition is unavailable in this browser. Try typing below, or open this page in Safari and check microphone permissions.';
+      return;
+    }
+    if(listening){ try{recognition.stop()}catch(e){} return; }
+    try{
+      recognition = new SpeechRecognition(); recognition.lang = 'en-IN'; recognition.continuous = false; recognition.interimResults = false; recognition.maxAlternatives = 1;
+      recognition.onstart = () => { listening = true; talk.textContent = '◉ Listening…'; setMode('listening'); };
+      recognition.onresult = event => { const said = event.results[0][0].transcript; answer(said); };
+      recognition.onerror = event => { toast.textContent = event.error === 'not-allowed' ? 'Microphone permission was denied. Allow microphone access in your browser settings.' : 'Voice input issue: ' + event.error + '. You can type instead.'; };
+      recognition.onend = () => { listening = false; talk.textContent = '🎙 Talk to JARVIS'; if(status.textContent.includes('LISTENING')) setMode('idle'); };
+      recognition.start();
+    }catch(e){ toast.textContent = 'Could not start the microphone. Please try again or type a command.'; listening = false; }
+  }
+  talk.addEventListener('click', startListening);
+  $('send').addEventListener('click', () => answer(typed.value));
+  typed.addEventListener('keydown', e => { if(e.key === 'Enter') answer(typed.value); });
+  $('stop').addEventListener('click', () => { if(window.speechSynthesis) window.speechSynthesis.cancel(); if(recognition && listening) recognition.stop(); setMode('idle','Voice output stopped'); });
+  $('clear').addEventListener('click', () => { log.replaceChildren(); addMessage('JARVIS','Log cleared. At your service.'); });
+})();
+</script>
+</body>
+</html>
